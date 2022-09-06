@@ -12,15 +12,15 @@ def dictate_loop():
     dictate.word_list = WORD_LIST
 
     while True:
-        prev_or_next_same: 'N' or 'P' = input("Play next or prev or same(N/P/S): ")
-        if prev_or_next_same in ['N', 'n']:
+        prev_or_next_or_same: 'N' or 'P' = input("Play next or prev or same(N/P/S): ")
+        if prev_or_next_or_same in ['N', 'n']:
             dictate.next()
-        elif prev_or_next_same in ['P', 'p']:
+        elif prev_or_next_or_same in ['P', 'p']:
             dictate.prev()
-        elif prev_or_next_same in ['S', 's']:
+        elif prev_or_next_or_same in ['S', 's']:
             dictate.same()
         else:
-            print('\nWrong cmd!, enter N or P')
+            print('\nWrong cmd!, enter N or P or S')
         line_formatter()
 
 
