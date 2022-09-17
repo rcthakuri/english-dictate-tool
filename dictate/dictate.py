@@ -1,4 +1,6 @@
 import pyttsx3
+from time import sleep
+from threading import Thread
 
 
 class DictateModel:
@@ -15,22 +17,33 @@ class Dictate(DictateModel):
         super().__init__()
 
     def say(self, word: str) -> None:
+        if self.engine._inLoop:
+            self.engine.endLoop()
         self.engine.say(word)
         self.engine.runAndWait()
 
-    def next(self) -> None:
+    def _next(self) -> None:
         self.counter = (self.counter + 1) % len(self.word_list)
         self.say(self.word_list[self.counter])
         self.loop_until_wrong_ans()
 
-    def prev(self) -> None:
+    def _prev(self) -> None:
         self.counter = (self.counter - 1) % len(self.word_list)
         self.say(self.word_list[self.counter])
         self.loop_until_wrong_ans()
 
-    def same(self) -> None:
+    def _same(self) -> None:
         self.say(self.word_list[self.counter])
         self.loop_until_wrong_ans()
+
+    def next(self):
+        self.thread_runner(self._next)
+
+    def prev(self):
+        self.thread_runner(self._prev)
+
+    def same(self):
+        self.thread_runner(self._same)
 
     def alert_wrong(self) -> None:
         self.say(self.wrong_alert_msg)
@@ -39,6 +52,7 @@ class Dictate(DictateModel):
         answer = self.get_ans()
         while answer != self.word_list[self.counter]:
             self.alert_wrong()
+            self.wait(3)
             self.say(self.word_list[self.counter])
             answer = self.get_ans()
         else:
@@ -47,3 +61,13 @@ class Dictate(DictateModel):
     @staticmethod
     def get_ans() -> str:
         return str(input('Enter the word: '))
+
+    @staticmethod
+    def thread_runner(target):
+        thread_inst = Thread(target=target)
+        thread_inst.start()
+        thread_inst.join()
+
+    @staticmethod
+    def wait(sec):
+        sleep(sec)
